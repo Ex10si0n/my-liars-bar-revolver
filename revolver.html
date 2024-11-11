@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Revolver Game</title>
+    <style>
+        .revolver {
+            width: 120px;
+            height: 120px;
+            background-color: #f0f0f0;
+            display: inline-block;
+            margin: 20px;
+            text-align: center;
+            vertical-align: top;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+        .revolver span {
+            position: absolute;
+            top: 20%;
+            left: 0;
+            width: 100%;
+        }
+        .revolver .shot-count {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            font-size: 16px;
+            color: #555;
+        }
+        .revolver .name-label {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            font-size: 16px;
+            color: #000;
+        }
+        .revolver.disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="revolver" id="revolver1">
+    <span>Ready</span>
+    <div class="shot-count"></div>
+    <div class="name-label">Steve</div>
+</div>
+<div class="revolver" id="revolver2">
+    <span>Ready</span>
+    <div class="shot-count"></div>
+    <div class="name-label">Edison</div>
+</div>
+<div class="revolver" id="revolver3">
+    <span>Ready</span>
+    <div class="shot-count"></div>
+    <div class="name-label">Nino</div>
+</div>
+<div class="revolver" id="revolver4">
+    <span>Ready</span>
+    <div class="shot-count"></div>
+    <div class="name-label">+0</div>
+</div>
+
+<script>
+    class Revolver {
+        constructor(elementId, playerName) {
+            this.element = document.getElementById(elementId);
+            this.chambers = 6;
+            this.bulletPosition = Math.floor(Math.random() * this.chambers);
+            this.currentPosition = 0;
+            this.isActive = true;
+            this.playerName = playerName;
+            this.element.addEventListener('click', () => this.fire());
+            this.updateDisplay('Ready');
+            this.updateShotCount();
+        }
+
+        fire() {
+            if (!this.isActive) return;
+
+            if (this.currentPosition === this.bulletPosition) {
+                this.updateDisplay('Bang!');
+                this.updateShotCount(`${(this.currentPosition + 1)}/${this.chambers}`);
+                this.disableRevolver();
+            } else {
+                this.updateDisplay('Click!');
+                this.updateShotCount(`${(this.currentPosition + 1)}/${this.chambers}`);
+                this.currentPosition = (this.currentPosition + 1) % this.chambers;
+            }
+        }
+
+        disableRevolver() {
+            this.isActive = false;
+            this.element.classList.add('disabled');
+            this.element.removeEventListener('click', this.fire); // Optional, since we check isActive
+        }
+
+        updateDisplay(message) {
+            this.element.querySelector('span').innerText = message;
+        }
+
+        updateShotCount(count) {
+            const shotCountElement = this.element.querySelector('.shot-count');
+            if (count) {
+                shotCountElement.innerText = `Shot: ${count}`;
+            } else {
+                shotCountElement.innerText = '';
+            }
+        }
+    }
+
+    // Initialize revolvers with names
+    new Revolver('revolver1', 'Steve');
+    new Revolver('revolver2', 'Edison');
+    new Revolver('revolver3', 'Nino');
+    new Revolver('revolver4', '+0');
+</script>
+
+</body>
+</html>
